@@ -1,14 +1,16 @@
 import { getLibs } from '../../scripts/utils.js';
 
 export default async function init(el) {
-  const { createTag } = await import(`${getLibs()}/utils/utils.js`);
-  const qResp = await fetch('/food/query-index.json');
+  const { createTag, getConfig } = await import(`${getLibs()}/utils/utils.js`);
+  const { locale } = getConfig();
+  const qResp = await fetch(`${locale.contentRoot}/food/query-index.json`);
   if (!qResp.ok) return;
   const list = createTag('ul', { class: 'food-list-container' });
   const qJson = await qResp.json();
   qJson.data.forEach(async (post) => {
     const li = createTag('li', { class: 'food-list-item' });
     list.append(li);
+
     const resp = await fetch(`${post.path}.plain.html`);
     if (!resp.ok) return;
     const html = await resp.text();
